@@ -2,7 +2,6 @@ apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: spring-boot-app-pipeline
-  namespace: your-namespace
 spec:
   params:
     - name: git-url
