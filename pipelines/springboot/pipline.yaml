@@ -12,9 +12,8 @@ spec:
       default: "main"
     - name: repo-name
       description: The Quay.io repository name
-    - name: namespace
+    - name: target-namespace
       description: The namespace where the application is deployed
-      default: "your-namespace"
 
   workspaces:
     - name: shared-workspace
@@ -105,6 +104,11 @@ spec:
       runAfter:
         - push-image
       taskSpec:
+        params:
+          - name: repo-name
+            type: string
+          - name: target-namespace
+            type: string
         steps:
           - name: update-deployment
             image: quay.io/openshift/origin-cli:4.7
@@ -113,15 +117,5 @@ spec:
               set -e
               IMAGE="quay.io/your-quay-username/$(params.repo-name):$(tasks.clone-repo.results.commit)"
               DEPLOYMENT="$(params.repo-name)"
-              NAMESPACE="$(params.namespace)"
-
-              echo "Updating deployment $DEPLOYMENT in namespace $NAMESPACE to image $IMAGE"
-              oc set image deployment/$DEPLOYMENT \
-                *=${IMAGE} -n $NAMESPACE
-              echo "Deployment updated successfully."
-      params:
-        - name: repo-name
-        - name: namespace
-      workspaces:
-        - name: source
-          workspace: shared-workspace
+              NAMESPACE="$(params.target-namespace)"
+              oc set image deployment/$DEPLOYMENT *=${IMAGE} -n $NAMESPACE
