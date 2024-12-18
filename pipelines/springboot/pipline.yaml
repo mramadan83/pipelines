@@ -81,7 +81,6 @@ spec:
         - name: quay-secret
           secret:
             secretName: quay-credentials
-  volumes:
-    - name: quay-secret
-      secret:
-        secretName: quay-credentials
+      volumeMounts:
+        - name: quay-secret
+          mountPath: /tekton/credentials
