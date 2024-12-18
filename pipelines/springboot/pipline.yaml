@@ -71,7 +71,7 @@ spec:
         - name: FORMAT
           value: "oci"
         - name: DESTINATION
-          value: "docker://quay.io/mramadan83/$(params.image-name):$(tasks.clone-repo.results.commit)"
+          value: "docker://quay.io/mramadan83/$(params.repo-name):$(tasks.clone-repo.results.commit)"
         - name: AUTHFILE
           value: "/workspace/source/credentials.json"
       workspaces:
