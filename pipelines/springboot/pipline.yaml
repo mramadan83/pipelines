@@ -16,6 +16,9 @@ spec:
   workspaces:
     - name: shared-workspace
       description: Workspace for sharing source code and build artifacts between tasks.
+    - name: maven-settings
+      configmap:
+        name: maven-settings-cm
 
   tasks:
     # 1. Clone the source code repository
