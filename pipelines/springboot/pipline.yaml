@@ -8,10 +8,10 @@ spec:
     - name: git-url
       description: The Git repository URL to clone
     - name: git-revision
-      description: The branch or commit to check out (default: main)
+      description: The branch or commit to check out 
       default: "main"
     - name: repo-name
-      description: The Quay.io repository name (e.g., "username/repo")
+      description: The Quay.io repository name 
 
   workspaces:
     - name: shared-workspace
