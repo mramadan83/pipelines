@@ -8,10 +8,10 @@ spec:
     - name: git-url
       description: Git repository URL
     - name: git-revision
-      description: Git branch or commit (default: "main")
+      description: Git branch or commit 
       default: "main"
     - name: repo-name
-      description: Image name in Quay.io (e.g., quay.io/<username>/<repo>)
+      description: Image name in Quay.io 
   workspaces:
     - name: shared-workspace
   tasks:
