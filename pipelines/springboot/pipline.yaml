@@ -77,9 +77,10 @@ spec:
       workspaces:
         - name: source
           workspace: shared-workspace
-      volumeMounts:
+      volumes:
         - name: quay-secret
-          mountPath: /workspace/source
+          secret:
+            secretName: quay-credentials
   volumes:
     - name: quay-secret
       secret:
