@@ -1,0 +1,87 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: spring-boot-app-pipeline
+  namespace: your-namespace
+spec:
+  params:
+    - name: git-url
+      description: Git repository URL
+    - name: git-revision
+      description: Git branch or commit (default: "main")
+      default: "main"
+    - name: repo-name
+      description: Image name in Quay.io (e.g., quay.io/<username>/<repo>)
+  workspaces:
+    - name: shared-workspace
+  tasks:
+    - name: clone-repo
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      params:
+        - name: url
+          value: "$(params.git-url)"
+        - name: revision
+          value: "$(params.git-revision)"
+        - name: subdirectory
+          value: ""
+        - name: deleteExisting
+          value: "true"
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+
+    - name: build-and-test
+      taskRef:
+        name: maven
+        kind: ClusterTask
+      params:
+        - name: GOALS
+          value: "clean package"
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+
+    - name: build-image
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      params:
+        - name: IMAGE
+          value: "quay.io/mramadan83/$(params.repo-name):$(tasks.clone-repo.results.commit)"
+        - name: STORAGE
+          value: "overlay"
+        - name: FORMAT
+          value: "oci"
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+
+    - name: push-image
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      params:
+        - name: IMAGE
+          value: "quay.io/mramadan83$(params.repo-name):$(tasks.clone-repo.results.commit)"
+        - name: STORAGE
+          value: "overlay"
+        - name: TLSVERIFY
+          value: "true"
+        - name: FORMAT
+          value: "oci"
+        - name: DESTINATION
+          value: "docker://quay.io/mramadan83/$(params.image-name):$(tasks.clone-repo.results.commit)"
+        - name: AUTHFILE
+          value: "/workspace/source/credentials.json"
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      volumeMounts:
+        - name: quay-secret
+          mountPath: /workspace/source
+  volumes:
+    - name: quay-secret
+      secret:
+        secretName: quay-credentials
