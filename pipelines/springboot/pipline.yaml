@@ -109,6 +109,11 @@ spec:
             type: string
           - name: target-namespace
             type: string
+      params:
+        - name: repo-name
+          value: "$(params.repo-name)"
+        - name: target-namespace
+          value: "$(params.target-namespace)"
         steps:
           - name: update-deployment
             image: quay.io/openshift/origin-cli:4.7
