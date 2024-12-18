@@ -1,70 +1,85 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: spring-boot-app-pipeline
-  namespace: your-namespace
+  name: build-and-push-pipeline
+  # Adjust the namespace as needed
 spec:
   params:
     - name: git-url
-      description: Git repository URL
+      description: The Git repository URL to clone
     - name: git-revision
-      description: Git branch or commit (default: "main")
+      description: The branch or commit to check out 
       default: "main"
     - name: repo-name
-      description: Image name in Quay.io (e.g., quay.io/<username>/<repo>)
+      description: The Quay.io repository name 
+
   workspaces:
     - name: shared-workspace
+      description: Workspace for sharing source code and build artifacts between tasks.
+
   tasks:
+    # 1. Clone the source code repository
     - name: clone-repo
       taskRef:
-        name: git-clone
         kind: ClusterTask
+        name: git-clone
       params:
         - name: url
           value: "$(params.git-url)"
         - name: revision
           value: "$(params.git-revision)"
-        - name: subdirectory
-          value: ""
-        - name: deleteExisting
-          value: "true"
       workspaces:
         - name: output
           workspace: shared-workspace
 
-    - name: build-and-test
+    # 2. Build the application using Maven after the repo is cloned
+    - name: build-app
+      runAfter:
+        - clone-repo
       taskRef:
-        name: maven
         kind: ClusterTask
+        name: maven
       params:
         - name: GOALS
-          value: "clean package"
+          value:
+            - clean
+            - package
       workspaces:
         - name: source
           workspace: shared-workspace
 
+    # 3. Build the container image once the app is successfully built
     - name: build-image
+      runAfter:
+        - build-app
       taskRef:
-        name: buildah
         kind: ClusterTask
+        name: buildah
       params:
         - name: IMAGE
           value: "quay.io/mramadan83/$(params.repo-name):$(tasks.clone-repo.results.commit)"
         - name: STORAGE
           value: "overlay"
+        - name: TLSVERIFY
+          value: "true"
         - name: FORMAT
           value: "oci"
+        - name: DOCKERFILE
+          value: "/workspace/source/Dockerfile"
       workspaces:
         - name: source
           workspace: shared-workspace
 
+    # 4. Push the built image to Quay.io after the image is created
     - name: push-image
+      runAfter:
+        - build-image
       taskRef:
-        name: buildah
         kind: ClusterTask
+        name: buildah
       params:
         - name: IMAGE
-          value: "quay.io/mramadan83$(params.repo-name):$(tasks.clone-repo.results.commit)"
+          value: "quay.io/mramadan83/$(params.repo-name):$(tasks.clone-repo.results.commit)"
         - name: STORAGE
           value: "overlay"
         - name: TLSVERIFY
@@ -72,16 +87,9 @@ spec:
         - name: FORMAT
           value: "oci"
         - name: DESTINATION
-          value: "docker://quay.io/mramadan83/$(params.image-name):$(tasks.clone-repo.results.commit)"
+          value: "docker://quay.io/mramadan83/$(params.repo-name):$(tasks.clone-repo.results.commit)"
         - name: AUTHFILE
-          value: "/workspace/source/credentials.json"
+          value: "/tekton/credentials/.dockerconfigjson"
       workspaces:
         - name: source
           workspace: shared-workspace
-      volumeMounts:
-        - name: quay-secret
-          mountPath: /workspace/source
-  volumes:
-    - name: quay-secret
-      secret:
-        secretName: quay-credentials
