@@ -81,6 +81,9 @@ spec:
         - name: quay-secret
           secret:
             secretName: quay-credentials
-      volumeMounts:
-        - name: quay-secret
-          mountPath: /tekton/credentials
+      taskSpec:
+        containers:
+          - name: buildah-container
+            volumeMounts:
+              - name: quay-secret
+                mountPath: /tekton/credentials
