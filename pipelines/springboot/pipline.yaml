@@ -77,13 +77,3 @@ spec:
       workspaces:
         - name: source
           workspace: shared-workspace
-      volumes:
-        - name: quay-secret
-          secret:
-            secretName: quay-credentials
-      taskSpec:
-        containers:
-          - name: buildah-container
-            volumeMounts:
-              - name: quay-secret
-                mountPath: /tekton/credentials
