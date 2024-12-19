@@ -167,7 +167,6 @@ spec:
               git config --global --add safe.directory /workspace/infra-workspace
               git config user.name "mramadan83"
               git config user.email "mramadan83@gmail.com"
-              git config user.password "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"
               git checkout main || git checkout -b main
               git push origin main
       params:
