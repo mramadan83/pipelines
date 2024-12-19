@@ -145,7 +145,7 @@ spec:
           # Step 2: Commit changes
           # You need git installed in the image. Use an image with git and sh:
           - name: git-commit
-            image: alpine/git:latest
+            image: bitnami/git:latest
             workingDir: /workspace/infra-workspace
             script: |
               #!/usr/bin/env sh
