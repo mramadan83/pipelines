@@ -152,7 +152,7 @@ spec:
               cd /workspace/infra-workspace
               git config user.name "Tekton Bot"
               git config user.email "tekton-bot@redhat.com"
-              git add deployment.yaml
+              git add $(params.repo-name)/deployment.yaml
               git commit -m "Update deployment image to $IMAGE"
     
           # Step 3: Push changes
