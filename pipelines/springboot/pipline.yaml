@@ -150,8 +150,11 @@ spec:
             script: |
               #!/usr/bin/env sh
               set -e
-              git config user.name "Tekton Bot"
-              git config user.email "tekton-bot@redhat.com"
+              echo "Debugging directory structure..."
+              ls -la
+              ls -la $(params.repo-name)
+              git config user.name "mramadan83"
+              git config user.email "mramadan83@gmail.com"
               git add $(params.repo-name)/deployment.yaml
               git commit -m "Update deployment image to $IMAGE"
     
