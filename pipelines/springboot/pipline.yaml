@@ -145,18 +145,15 @@ spec:
           # Step 2: Commit changes
           # You need git installed in the image. Use an image with git and sh:
           - name: git-commit
-            image: bitnami/git:latest
+            image: alpine/git:latest
             workingDir: /workspace/infra-workspace
             script: |
               #!/usr/bin/env sh
               set -e
-              echo "Debugging directory structure..."
-              ls -la
-              ls -la $(params.repo-name)
+              chmod -R a+rwx .
               git config user.name "mramadan83"
               git config user.email "mramadan83@gmail.com"
               git status
-              ls -la
               git add $(params.repo-name)/deployment.yaml
               git commit -m "Update deployment image to $IMAGE"
     
