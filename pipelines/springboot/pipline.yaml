@@ -145,12 +145,11 @@ spec:
           # Step 2: Commit changes
           # You need git installed in the image. Use an image with git and sh:
           - name: git-commit
-            image: alpine/git:3.17
+            image: alpine/git:latest
             workingDir: /workspace/infra-workspace
             script: |
               #!/usr/bin/env sh
               set -e
-              apk add --no-cache git
               git config user.name "mramadan83"
               git config user.email "mramadan83@gmail.com"
               git status
