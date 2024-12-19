@@ -187,15 +187,15 @@ spec:
               DEPLOYMENT_NAME="$(params.repo-name)"
               NAMESPACE="$(params.target-namespace)"
               # Assuming deployment.yaml is in the root of the infra repo
-              oc apply -f /workspace/infra-workspace/$(params.repo-name)/deployment.yaml -n $NAMESPACE
+              oc apply -f /workspace/shared-workspace/$(params.repo-name)/deployment.yaml -n $NAMESPACE
       params:
         - name: target-namespace
           value: "$(params.target-namespace)"
         - name: repo-name
           value: "$(params.repo-name)"
       workspaces:
-        - name: infra-workspace
-          workspace: infra-workspace
+        - name: shared-workspace
+          workspace: shared-workspace
           
     - name: deploy-to-openshift
       runAfter:
