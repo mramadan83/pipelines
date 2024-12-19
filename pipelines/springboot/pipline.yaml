@@ -172,13 +172,17 @@ spec:
               git push origin main
             volumeMounts:
               - name: git-credentials-volume
-                mountPath: /tekton/creds
+                mountPath: /workspace/git-credentials
       params:
         - name: repo-name
           value: "$(params.repo-name)"
       workspaces:
         - name: infra-workspace
           workspace: infra-workspace
+      volumes:
+        - name: git-credentials-volume
+          secret:
+            secretName: git-credentials
     
 
     # Apply the deployment from the infra repo
