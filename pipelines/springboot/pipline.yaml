@@ -187,7 +187,7 @@ spec:
               DEPLOYMENT_NAME="$(params.repo-name)"
               NAMESPACE="$(params.target-namespace)"
               # Assuming deployment.yaml is in the root of the infra repo
-              oc apply -f /workspace/infra-workspace/deployment.yaml -n $NAMESPACE
+              oc apply -f /workspace/infra-workspace/$(params.repo-name)/deployment.yaml -n $NAMESPACE
       params:
         - name: target-namespace
           value: "$(params.target-namespace)"
