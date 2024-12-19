@@ -170,13 +170,6 @@ spec:
               git config --global --add safe.directory /workspace/infra-workspace
               git checkout main || git checkout -b main
               git push origin main
-            volumeMounts:
-              - name: git-credentials-volume
-                mountPath: /workspace/git-credentials
-        volumes:
-          - name: git-credentials-volume
-            secret:
-              secretName: git-credentials
       params:
         - name: repo-name
           value: "$(params.repo-name)"
