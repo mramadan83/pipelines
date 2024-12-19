@@ -173,16 +173,16 @@ spec:
             volumeMounts:
               - name: git-credentials-volume
                 mountPath: /workspace/git-credentials
+        volumes:
+          - name: git-credentials-volume
+            secret:
+              secretName: git-credentials
       params:
         - name: repo-name
           value: "$(params.repo-name)"
       workspaces:
         - name: infra-workspace
           workspace: infra-workspace
-      volumes:
-        - name: git-credentials-volume
-          secret:
-            secretName: git-credentials
     
 
     # Apply the deployment from the infra repo
