@@ -24,6 +24,8 @@ spec:
       description: Workspace for sharing source code and build artifacts between tasks.
     - name: maven-settings
       description: Maven settings configuration
+    - name: infra-workspace
+      description: Workspace for sharing infra source code and build artifacts between tasks.
 
   tasks:
     # 1. Clone the source code repository
@@ -118,7 +120,7 @@ spec:
           value: "main"
       workspaces:
         - name: output
-          workspace: shared-workspace
+          workspace: infra-workspace
 
     - name: update-and-push-deployment
       runAfter:
@@ -138,7 +140,7 @@ spec:
               echo "Updating deployment.yaml with image: $IMAGE"
               # Assuming there's a line in deployment.yaml like:
               # image: quay.io/mramadan83/spring-boot-hello-world:latest
-              sed -i "s|image: quay.io/mramadan83/.*|image: $IMAGE|" /workspace/shared-workspace/$(params.repo-name)/deployment.yaml
+              sed -i "s|image: quay.io/mramadan83/.*|image: $IMAGE|" /workspace/infra-workspace/$(params.repo-name)/deployment.yaml
     
           # Step 2: Commit changes
           # You need git installed in the image. Use an image with git and sh:
@@ -164,8 +166,8 @@ spec:
         - name: repo-name
           value: "$(params.repo-name)"
       workspaces:
-        - name: shared-workspace
-          workspace: shared-workspace
+        - name: infra-workspace
+          workspace: infra-workspace
     
 
     # Apply the deployment from the infra repo
@@ -187,15 +189,15 @@ spec:
               DEPLOYMENT_NAME="$(params.repo-name)"
               NAMESPACE="$(params.target-namespace)"
               # Assuming deployment.yaml is in the root of the infra repo
-              oc apply -f /workspace/shared-workspace/$(params.repo-name)/deployment.yaml -n $NAMESPACE
+              oc apply -f /workspace/infra-workspace/$(params.repo-name)/deployment.yaml -n $NAMESPACE
       params:
         - name: target-namespace
           value: "$(params.target-namespace)"
         - name: repo-name
           value: "$(params.repo-name)"
       workspaces:
-        - name: shared-workspace
-          workspace: shared-workspace
+        - name: infra-workspace
+          workspace: infra-workspace
           
     - name: deploy-to-openshift
       runAfter:
