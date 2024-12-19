@@ -155,6 +155,8 @@ spec:
               ls -la $(params.repo-name)
               git config user.name "mramadan83"
               git config user.email "mramadan83@gmail.com"
+              git status
+              ls -la
               git add $(params.repo-name)/deployment.yaml
               git commit -m "Update deployment image to $IMAGE"
     
