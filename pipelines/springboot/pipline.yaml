@@ -149,7 +149,6 @@ spec:
             script: |
               #!/usr/bin/env sh
               set -e
-              cd /workspace/infra-workspace
               git config user.name "Tekton Bot"
               git config user.email "tekton-bot@redhat.com"
               git add $(params.repo-name)/deployment.yaml
