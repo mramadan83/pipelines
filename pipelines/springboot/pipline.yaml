@@ -164,6 +164,9 @@ spec:
             script: |
               #!/usr/bin/env sh
               set -e
+              ls -la /tekton/creds
+              cat /tekton/creds/username
+              cat /tekton/creds/password
               git config --global --add safe.directory /workspace/infra-workspace
               git checkout main || git checkout -b main
               git push origin main
