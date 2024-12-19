@@ -173,10 +173,6 @@ spec:
             volumeMounts:
               - name: git-credentials-volume
                 mountPath: /tekton/creds
-            volumes:
-              - name: git-credentials-volume
-                secret:
-                  secretName: git-credentials
       params:
         - name: repo-name
           value: "$(params.repo-name)"
