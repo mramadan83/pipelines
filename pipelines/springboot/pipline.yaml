@@ -150,17 +150,9 @@ spec:
             script: |
               #!/usr/bin/env sh
               set -e
-              pwd
-              ls -la
               git config --global --add safe.directory /workspace/infra-workspace
-              git status
-
-              echo "Repo name is: $(params.repo-name)"
-              ls -la $(params.repo-name)
               git config user.name "mramadan83"
-              echo "after config"
               git config user.email "mramadan83@gmail.com"
-              git status
               git add $(params.repo-name)/deployment.yaml
               git commit -m "Update deployment image to $IMAGE"
     
@@ -172,6 +164,7 @@ spec:
             script: |
               #!/usr/bin/env sh
               set -e
+              git config --global --add safe.directory /workspace/infra-workspace
               git checkout main || git checkout -b main
               git push origin main
       params:
