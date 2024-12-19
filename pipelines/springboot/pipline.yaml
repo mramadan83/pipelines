@@ -118,7 +118,7 @@ spec:
           value: "main"
       workspaces:
         - name: output
-          workspace: infra-workspace
+          workspace: shared-workspace
 
     - name: update-and-push-deployment
       runAfter:
@@ -138,7 +138,7 @@ spec:
               echo "Updating deployment.yaml with image: $IMAGE"
               # Assuming there's a line in deployment.yaml like:
               # image: quay.io/mramadan83/spring-boot-hello-world:latest
-              sed -i "s|image: quay.io/mramadan83/.*|image: $IMAGE|" /workspace/infra-workspace/$(params.repo-name)/deployment.yaml
+              sed -i "s|image: quay.io/mramadan83/.*|image: $IMAGE|" /workspace/shared-workspace/$(params.repo-name)/deployment.yaml
     
           # Step 2: Commit changes
           # You need git installed in the image. Use an image with git and sh:
@@ -164,8 +164,8 @@ spec:
         - name: repo-name
           value: "$(params.repo-name)"
       workspaces:
-        - name: infra-workspace
-          workspace: infra-workspace
+        - name: shared-workspace
+          workspace: shared-workspace
     
 
     # Apply the deployment from the infra repo
