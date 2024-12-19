@@ -167,7 +167,7 @@ spec:
               git config --global --add safe.directory /workspace/infra-workspace
               git config user.name "mramadan83"
               git config user.email "mramadan83@gmail.com"
-              git remote set-url origin https://mramadan83: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@github.com/mramadan83/infra.git
+              git remote set-url origin https://mramadan83:Ramadan_12@github.com/mramadan83/infra.git
               git checkout main || git checkout -b main
               git push origin main
       params:
