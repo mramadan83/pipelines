@@ -171,7 +171,7 @@ spec:
     # Apply the deployment from the infra repo
     - name: create-deployment
       runAfter:
-        - clone-infra
+        - update-and-push-deployment
       taskSpec:
         params:
           - name: target-namespace
@@ -199,7 +199,7 @@ spec:
           
     - name: deploy-to-openshift
       runAfter:
-        - push-image
+        - create-deployment
       params:
         - name: repo-name
           value: "$(params.repo-name)"
