@@ -168,10 +168,12 @@ spec:
           # Ensure the secret with credentials is mounted and git remote is authenticated
           - name: git-push
             image: alpine/git:latest
+            workingDir: /workspace/infra-workspace
             script: |
               #!/usr/bin/env sh
               set -e
-              git push origin $(git rev-parse --abbrev-ref HEAD)
+              git checkout main || git checkout -b main
+              git push origin main
       params:
         - name: repo-name
           value: "$(params.repo-name)"
