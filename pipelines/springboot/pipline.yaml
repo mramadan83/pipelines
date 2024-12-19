@@ -14,6 +14,10 @@ spec:
       description: The Quay.io repository name
     - name: target-namespace
       description: The namespace where the application is deployed
+    - name: infra-git-url
+      type: string
+      description: Git repository URL for the infra repo containing deployment.yaml
+      default: "https://github.com/mramadan83/infra.git"
 
   workspaces:
     - name: shared-workspace
@@ -99,6 +103,99 @@ spec:
       workspaces:
         - name: source
           workspace: shared-workspace
+
+    # Clone the infra repository that has deployment.yaml
+    - name: clone-infra
+      runAfter:
+        - push-image
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      params:
+        - name: url
+          value: "$(params.infra-git-url)"
+        - name: revision
+          value: "main"
+      workspaces:
+        - name: output
+          workspace: infra-workspace
+
+    - name: update-and-push-deployment
+      runAfter:
+        - clone-infra
+      taskSpec:
+        params:
+          - name: repo-name
+            type: string
+        steps:
+          # Step 1: Update the image tag
+          - name: update-image
+            image: registry.access.redhat.com/ubi8/ubi:latest
+            script: |
+              #!/usr/bin/env sh
+              set -e
+              IMAGE="quay.io/mramadan83/$(params.repo-name):$(tasks.clone-repo.results.commit)"
+              echo "Updating deployment.yaml with image: $IMAGE"
+              # Assuming there's a line in deployment.yaml like:
+              # image: quay.io/mramadan83/spring-boot-hello-world:latest
+              sed -i "s|image: quay.io/mramadan83/.*|image: $IMAGE|" /workspace/infra-workspace/$(params.repo-name)/deployment.yaml
+    
+          # Step 2: Commit changes
+          # You need git installed in the image. Use an image with git and sh:
+          - name: git-commit
+            image: alpine/git:latest
+            script: |
+              #!/usr/bin/env sh
+              set -e
+              git config user.name "Tekton Bot"
+              git config user.email "tekton-bot@redhat.com"
+              git add deployment.yaml
+              git commit -m "Update deployment image to $IMAGE"
+    
+          # Step 3: Push changes
+          # Ensure the secret with credentials is mounted and git remote is authenticated
+          - name: git-push
+            image: alpine/git:latest
+            script: |
+              #!/usr/bin/env sh
+              set -e
+              git push origin $(git rev-parse --abbrev-ref HEAD)
+      params:
+        - name: repo-name
+          value: "$(params.repo-name)"
+      workspaces:
+        - name: infra-workspace
+          workspace: infra-workspace
+    
+
+    # Apply the deployment from the infra repo
+    - name: create-deployment
+      runAfter:
+        - clone-infra
+      taskSpec:
+        params:
+          - name: target-namespace
+            type: string
+          - name: repo-name
+            type: string
+        steps:
+          - name: apply-deployment
+            image: quay.io/openshift/origin-cli:4.7
+            script: |
+              #!/usr/bin/env sh
+              set -e
+              DEPLOYMENT_NAME="$(params.repo-name)"
+              NAMESPACE="$(params.target-namespace)"
+              # Assuming deployment.yaml is in the root of the infra repo
+              oc apply -f /workspace/infra-workspace/deployment.yaml -n $NAMESPACE
+      params:
+        - name: target-namespace
+          value: "$(params.target-namespace)"
+        - name: repo-name
+          value: "$(params.repo-name)"
+      workspaces:
+        - name: infra-workspace
+          workspace: infra-workspace
           
     - name: deploy-to-openshift
       runAfter:
