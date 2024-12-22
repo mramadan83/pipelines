@@ -47,7 +47,7 @@ spec:
       runAfter:
         - clone-repo
       taskRef:
-        kind: ClusterTask
+        kind: Task
         name: maven
       params:
         - name: GOALS
@@ -65,7 +65,7 @@ spec:
       runAfter:
         - build-app
       taskRef:
-        kind: ClusterTask
+        kind: Task
         name: buildah
       params:
         - name: IMAGE
@@ -87,7 +87,7 @@ spec:
       runAfter:
         - build-image
       taskRef:
-        kind: ClusterTask
+        kind: Task
         name: buildah
       params:
         - name: IMAGE
@@ -111,7 +111,7 @@ spec:
       runAfter:
         - push-image
       taskRef:
-        kind: ClusterTask
+        kind: Task
         name: git-clone
       params:
         - name: url
