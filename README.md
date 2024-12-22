@@ -1,6 +1,7 @@
 # for spring boot
-- create the pvc:
+- create the pvc(s):
 - oc apply -f https://raw.githubusercontent.com/mramadan83/pipelines/refs/heads/main/pvc/shared-pvc.yaml
+- oc apply -f https://raw.githubusercontent.com/mramadan83/pipelines/refs/heads/main/pvc/infra-pvc.yaml
 - create the config map which contains the settings.xml for maven
 - oc apply -f https://raw.githubusercontent.com/mramadan83/pipelines/refs/heads/main/pipelines/springboot/config.yaml
 - create the secrte that will be used to push to quay:
