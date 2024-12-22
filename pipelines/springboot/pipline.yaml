@@ -158,18 +158,18 @@ spec:
     
           # Step 3: Push changes
           # Ensure the secret with credentials is mounted and git remote is authenticated
-          - name: git-push
-            image: alpine/git:latest
-            workingDir: /workspace/infra-workspace
-            script: |
-              #!/usr/bin/env sh
-              set -e
-              git config --global --add safe.directory /workspace/infra-workspace
-              git config user.name "mramadan83"
-              git config user.email "mramadan83@gmail.com"
-              git remote set-url origin https://mramadan83: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@github.com/mramadan83/infra.git
-              git checkout main || git checkout -b main
-              git push origin main
+          #- name: git-push
+          #  image: alpine/git:latest
+          #  workingDir: /workspace/infra-workspace
+          #  script: |
+          #    #!/usr/bin/env sh
+          #    set -e
+          #    git config --global --add safe.directory /workspace/infra-workspace
+          #    git config user.name "mramadan83"
+          #    git config user.email "mramadan83@gmail.com"
+          #    git remote set-url origin https://mramadan83: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@github.com/mramadan83/infra.git
+          #    git checkout main || git checkout -b main
+          #    git push origin main
       params:
         - name: repo-name
           value: "$(params.repo-name)"
