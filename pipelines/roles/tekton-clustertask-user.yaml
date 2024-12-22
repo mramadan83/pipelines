@@ -1,0 +1,8 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: tekton-clustertask-user
+rules:
+  - apiGroups: ["tekton.dev"]
+    resources: ["clustertasks"]
+    verbs: ["get", "list", "watch", "use"]
