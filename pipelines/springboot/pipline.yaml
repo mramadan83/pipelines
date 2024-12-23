@@ -229,7 +229,7 @@ spec:
             script: |
               #!/usr/bin/env sh
               set -e
-              IMAGE="quay.io/your-quay-username/$(params.repo-name):$(tasks.clone-repo.results.commit)"
+              IMAGE="quay.io/mramadan83/$(params.repo-name):$(tasks.clone-repo.results.commit)"
               DEPLOYMENT="$(params.repo-name)"
               NAMESPACE="$(params.target-namespace)"
               oc set image deployment/$DEPLOYMENT *=${IMAGE} -n $NAMESPACE
