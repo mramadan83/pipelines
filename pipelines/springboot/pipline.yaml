@@ -154,35 +154,36 @@ spec:
               git config --global --add safe.directory /workspace/infra-workspace
               git config user.name "mramadan83"
               git config user.email "mramadan83@gmail.com"
-            
-              # Extract credentials
-              GIT_USERNAME=$(cat /var/run/secrets/kubernetes.io/serviceaccount/username)
-              GIT_PASSWORD=$(cat /var/run/secrets/kubernetes.io/serviceaccount/password)
-              echo "GIT_USERNAME is: $GIT_USERNAME"
-              echo "GIT_Pass is: $GIT_PASSWORD"
-              # Ensure we're on the correct branch
-              git fetch --all
-              git checkout main || git checkout -b main
-            
-              # Add, commit, and push changes
               git add $(params.repo-name)/deployment.yaml
               git commit -m "Update deployment image to $IMAGE"
-              git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/mramadan83/infra.git main
+              
+              # Extract credentials
+              #GIT_USERNAME=$(cat /var/run/secrets/kubernetes.io/serviceaccount/username)
+              #GIT_PASSWORD=$(cat /var/run/secrets/kubernetes.io/serviceaccount/password)
+              #echo "GIT_USERNAME is: $GIT_USERNAME"
+              #echo "GIT_Pass is: $GIT_PASSWORD"
+              # Ensure we're on the correct branch
+              #git fetch --all
+              #git checkout main || git checkout -b main
+            
+              # Add, commit, and push changes
+              
+              #git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/mramadan83/infra.git main
     
           # Step 3: Push changes
           # Ensure the secret with credentials is mounted and git remote is authenticated
-          #- name: git-push
-          #  image: alpine/git:latest
-          #  workingDir: /workspace/infra-workspace
-          #  script: |
-          #    #!/usr/bin/env sh
-          #    set -e
-          #    git config --global --add safe.directory /workspace/infra-workspace
-          #    git config user.name "mramadan83"
-          #    git config user.email "mramadan83@gmail.com"
-          #    git remote set-url origin https://mramadan83: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@github.com/mramadan83/infra.git
-          #    git checkout main || git checkout -b main
-          #    git push origin main
+          - name: git-push
+            image: alpine/git:latest
+            workingDir: /workspace/infra-workspace
+            script: |
+              #!/usr/bin/env sh
+              set -e
+              git config --global --add safe.directory /workspace/infra-workspace
+              git config user.name "mramadan83"
+              git config user.email "mramadan83@gmail.com"
+              git remote set-url origin https://mramadan83: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@github.com/mramadan83/infra.git
+              git checkout main || git checkout -b main
+              git push origin main
       params:
         - name: repo-name
           value: "$(params.repo-name)"
