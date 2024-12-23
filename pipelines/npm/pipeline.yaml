@@ -47,7 +47,7 @@ spec:
         steps:
           - name: npm-install
             image: node:16
-            workingDir: /workspace/shared-workspace
+            workingDir: /workspace/source
             script: |
               #!/usr/bin/env sh
               set -e
