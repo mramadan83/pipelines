@@ -18,6 +18,9 @@
 - oc apply -f https://raw.githubusercontent.com/mramadan83/pipelines/refs/heads/main/pipelines/springboot/pipline.yaml
 - all the tasks are ClusterTasks, so no need to create tasks till now
 
+- sample curl
+- curl https://spring-boot-hello-world-pipelines.apps.l1ibqh3c.eastus.aroapp.io/hello
+
 - #################################################
 if your namespace can't use the cluster tasks
 check first
