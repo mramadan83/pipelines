@@ -155,6 +155,7 @@ spec:
               git config user.email "mramadan83@gmail.com"
               git add $(params.repo-name)/deployment.yaml
               git commit -m "Update deployment image to $IMAGE"
+              # git push origin main
     
           # Step 3: Push changes
           # Ensure the secret with credentials is mounted and git remote is authenticated
@@ -229,7 +230,7 @@ spec:
             script: |
               #!/usr/bin/env sh
               set -e
-              IMAGE="quay.io/your-quay-username/$(params.repo-name):$(tasks.clone-repo.results.commit)"
+              IMAGE="quay.io/mramadan83/$(params.repo-name):$(tasks.clone-repo.results.commit)"
               DEPLOYMENT="$(params.repo-name)"
               NAMESPACE="$(params.target-namespace)"
               oc set image deployment/$DEPLOYMENT *=${IMAGE} -n $NAMESPACE
