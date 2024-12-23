@@ -153,9 +153,10 @@ spec:
               git config --global --add safe.directory /workspace/infra-workspace
               git config user.name "mramadan83"
               git config user.email "mramadan83@gmail.com"
+              git checkout main || git checkout -b main
               git add $(params.repo-name)/deployment.yaml
               git commit -m "Update deployment image to $IMAGE"
-              git push 
+              git push origin main
     
           # Step 3: Push changes
           # Ensure the secret with credentials is mounted and git remote is authenticated
