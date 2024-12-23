@@ -38,9 +38,6 @@ spec:
       workspaces:
         - name: output
           workspace: shared-workspace
-      volumeMounts:
-        - name: git-credentials
-          mountPath: /tekton/credentials
 
     # 2. Install dependencies and build the application using npm
     - name: build-app
