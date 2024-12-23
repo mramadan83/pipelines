@@ -63,7 +63,7 @@ spec:
               echo "Building application..."
               npm run build
       workspaces:
-        - name: shared-workspace
+        - name: source
           workspace: shared-workspace
 
     # 3. Build the container image
@@ -83,7 +83,7 @@ spec:
         - name: FORMAT
           value: "oci"
         - name: DOCKERFILE
-          value: "/workspace/shared-workspace/Dockerfile"
+          value: "/workspace/source/Dockerfile"
       workspaces:
         - name: source
           workspace: shared-workspace
