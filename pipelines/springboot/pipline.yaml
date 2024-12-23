@@ -155,7 +155,7 @@ spec:
               git config user.email "mramadan83@gmail.com"
               git add $(params.repo-name)/deployment.yaml
               git commit -m "Update deployment image to $IMAGE"
-              git push origin main
+              git push 
     
           # Step 3: Push changes
           # Ensure the secret with credentials is mounted and git remote is authenticated
