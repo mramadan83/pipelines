@@ -56,7 +56,7 @@ spec:
 
           - name: npm-build
             image: node:16
-            workingDir: /workspace/shared-workspace
+            workingDir: /workspace/source
             script: |
               #!/usr/bin/env sh
               set -e
