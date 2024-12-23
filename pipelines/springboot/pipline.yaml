@@ -119,7 +119,7 @@ spec:
         - name: revision
           value: "main"
       workspaces:
-        - name: output
+        - name: infra-output
           workspace: infra-workspace
 
     - name: update-and-push-deployment
