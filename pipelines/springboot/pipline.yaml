@@ -22,10 +22,16 @@ spec:
   workspaces:
     - name: shared-workspace
       description: Workspace for sharing source code and build artifacts between tasks.
+      persistentVolumeClaim:
+        claimName: tekton-pvc
     - name: maven-settings
-      description: Maven settings configuration
+      description: Maven settings configuration.
+      configMap:
+        name: maven-settings-cm
     - name: infra-workspace
       description: Workspace for sharing infra source code and build artifacts between tasks.
+      persistentVolumeClaim:
+        claimName: infra-pvc
 
   tasks:
     # 1. Clone the source code repository
