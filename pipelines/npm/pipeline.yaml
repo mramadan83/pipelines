@@ -61,7 +61,11 @@ spec:
               #!/usr/bin/env sh
               set -e
               echo "Building application..."
-              npm run build
+              if npm run | grep -q "build"; then
+                npm run build
+              else
+                echo "No build script found in package.json. Skipping build step."
+              fi
       workspaces:
         - name: source
           workspace: shared-workspace
