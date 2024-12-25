@@ -21,6 +21,21 @@
 - sample curl
 - curl https://spring-boot-hello-world-pipelines.apps.l1ibqh3c.eastus.aroapp.io/hello
 
+  ###############################################
+
+  to clone private repository with Authentication
+  - create personal access token on git
+  - create secret generic github-pat-secret \
+    --type=kubernetes.io/basic-auth \
+    --from-literal=username=$GITHUB_USERNAME \
+    --from-literal=password=$TEKTON_TUTORIAL_GITHUB_PAT
+  - oc annotate secret github-pat-secret "tekton.dev/git-0=https://github.com"
+  - oc patch serviceaccount github-bot -p '{"secrets": [{"name": "github-pat-secret"}]}'
+ 
+  - you can check results by
+  - oc get sa pipeline -o yaml
+
+
 - #################################################
 if your namespace can't use the cluster tasks
 check first
