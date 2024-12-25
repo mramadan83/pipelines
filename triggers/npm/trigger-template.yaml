@@ -1,7 +1,7 @@
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: build-and-push-trigger-template
+  name: npm-trigger-template
 spec:
   params:
     - name: git-url
@@ -13,15 +13,15 @@ spec:
       description: The repository name
     - name: target-namespace
       description: The target namespace
-      default: "default"  # Default namespace
+      default: "poc"  # Default namespace
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        generateName: build-and-push-run-
+        generateName: npm-build-and-push-run-
       spec:
         pipelineRef:
-          name: build-and-push-pipeline
+          name: npm-build-and-push-pipeline
         params:
           - name: git-url
             value: "$(tt.params.git-url)"
@@ -37,9 +37,6 @@ spec:
           - name: shared-workspace
             persistentVolumeClaim:
               claimName: tekton-pvc
-          - name: maven-settings
-            configMap:
-              name: maven-settings-cm
           - name: infra-workspace
             persistentVolumeClaim:
               claimName: infra-pvc
