@@ -26,4 +26,39 @@ if your namespace can't use the cluster tasks
 check first
 - oc auth can-i use clustertasks/git-clone --as=system:serviceaccount:<your-namespace>:pipeline
 if, no do the followoing
-- oc apply -f 
+- in the pipelines -> tasks make sure that the cluster tasks is installed
+
+  ############################################
+
+  call the pipeline from the postman and webhook
+  - oc apply -f https://raw.githubusercontent.com/mramadan83/pipelines/refs/heads/main/triggers/trigger-template.yaml
+  - oc apply -f https://raw.githubusercontent.com/mramadan83/pipelines/refs/heads/main/triggers/trigger-binding.yaml
+  - oc apply -f https://raw.githubusercontent.com/mramadan83/pipelines/refs/heads/main/triggers/event-listner.yaml
+  - oc get services
+  - oc expose service/<event-listner-created-service-name>
+  now a deployment for the event listner should be created and pod is running
+  also a service and route for the event listner should be created
+#-------------------
+call the pipeline from posman
+- create request POST
+- add the route url in the url
+- add header "Content-Type" with value "application/json"
+- sample body raw ---> json
+
+{
+  "repository": {
+    "clone_url": "https://github.com/mramadan83/spring-boot-hello-world.git",
+    "name": "spring-boot-hello-world"
+  },
+  "ref": "main",
+  "namespace": "poc"  // Replace with your desired namespace
+}
+
+    ##########
+    some investigations for the trigering
+    - oc get eventlisteners
+    - oc describe route <route-name>
+    - oc describe service <service-name>
+    - oc get endpoints <service-name>
+    - oc get replicasets
+    - oc describe replicaset <replica-set>
