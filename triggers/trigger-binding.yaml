@@ -1,0 +1,15 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: build-and-push-trigger-binding
+spec:
+  params:
+    - name: git-url
+      value: $(body.repository.clone_url)
+    - name: git-revision
+      value: $(body.ref)
+    - name: repo-name
+      value: $(body.repository.name)
+    - name: target-namespace
+      value: $(body.namespace)  # Map the namespace field from the payload
+

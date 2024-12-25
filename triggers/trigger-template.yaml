@@ -1,0 +1,46 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: build-and-push-trigger-template
+spec:
+  params:
+    - name: git-url
+      description: The Git repository URL
+    - name: git-revision
+      description: The Git branch or tag
+      default: "main"  # Default branch
+    - name: repo-name
+      description: The repository name
+    - name: target-namespace
+      description: The target namespace
+      default: "default"  # Default namespace
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: build-and-push-run-
+      spec:
+        pipelineRef:
+          name: build-and-push-pipeline
+        params:
+          - name: git-url
+            value: "$(tt.params.git-url)"
+          - name: git-revision
+            value: "$(tt.params.git-revision)"
+          - name: repo-name
+            value: "$(tt.params.repo-name)"
+          - name: target-namespace
+            value: "$(tt.params.target-namespace)"
+          - name: infra-git-url
+            value: "https://github.com/mramadan83/infra.git"  # Default value
+        workspaces:
+          - name: shared-workspace
+            persistentVolumeClaim:
+              claimName: shared-pvc
+          - name: maven-settings
+            configMap:
+              name: maven-settings-cm
+          - name: infra-workspace
+            persistentVolumeClaim:
+              claimName: infra-pvc
+
