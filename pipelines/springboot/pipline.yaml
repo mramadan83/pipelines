@@ -26,7 +26,7 @@ spec:
       description: Maven settings configuration.
     - name: infra-workspace
       description: Workspace for sharing infra source code and build artifacts between tasks.
-    - name: auth
+    - name: git-auth-workspace
       description: mount github credentials
   tasks:
     # 1. Clone the source code repository
