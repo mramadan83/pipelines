@@ -36,7 +36,7 @@ spec:
         workspaces:
           - name: shared-workspace
             persistentVolumeClaim:
-              claimName: shared-pvc
+              claimName: tekton-pvc
           - name: maven-settings
             configMap:
               name: maven-settings-cm
