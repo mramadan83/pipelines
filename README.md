@@ -25,7 +25,7 @@
 
   to clone private repository with Authentication
   - create personal access token on git
-  - create secret generic github-pat-secret \
+  - oc create secret generic github-pat-secret \
     --type=kubernetes.io/basic-auth \
     --from-literal=username=$GITHUB_USERNAME \
     --from-literal=password=$TEKTON_TUTORIAL_GITHUB_PAT
