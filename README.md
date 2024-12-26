@@ -30,7 +30,7 @@
     --from-literal=username=$GITHUB_USERNAME \
     --from-literal=password=$TEKTON_TUTORIAL_GITHUB_PAT
   - oc annotate secret github-pat-secret "tekton.dev/git-0=https://github.com"
-  - oc patch serviceaccount github-bot -p '{"secrets": [{"name": "github-pat-secret"}]}'
+  - oc patch serviceaccount pipeline -p '{"secrets": [{"name": "github-pat-secret"}]}'
 
  https://redhat-scholars.github.io/tekton-tutorial/tekton-tutorial/private_reg_repos.html
  
