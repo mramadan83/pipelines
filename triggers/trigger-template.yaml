@@ -13,7 +13,7 @@ spec:
       description: The repository name
     - name: target-namespace
       description: The target namespace
-      default: "default"  # Default namespace
+      default: "poc"  # Default namespace
   resourcetemplates:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
