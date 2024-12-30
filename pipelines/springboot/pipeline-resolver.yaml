@@ -22,7 +22,7 @@ spec:
   workspaces:
     - name: shared-workspace
       description: Workspace for sharing source code and build artifacts between tasks.
-    - name: maven-settings
+    - name: maven_settings
       description: Maven settings configuration.
     - name: infra-workspace
       description: Workspace for sharing infra source code and build artifacts between tasks.
@@ -69,8 +69,8 @@ spec:
       workspaces:
         - name: source
           workspace: shared-workspace
-        - name: maven-settings
-          workspace: maven-settings
+        - name: maven_settings
+          workspace: maven_settings
 
     # 3. Build the container image once the app is successfully built
     - name: build-image
