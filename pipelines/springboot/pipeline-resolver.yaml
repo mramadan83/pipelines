@@ -26,6 +26,12 @@ spec:
       description: Maven settings configuration.
     - name: infra-workspace
       description: Workspace for sharing infra source code and build artifacts between tasks.
+
+  podTemplate:
+    securityContext:
+      runAsUser: 65532
+      fsGroup: 65532
+      
   tasks:
     # 1. Clone the source code repository
     - name: clone-repo
