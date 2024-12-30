@@ -7,7 +7,7 @@ spec:
   triggers:
     - name: github-trigger
       bindings:
-        - ref: build-and-push-trigger-binding
+        - ref: build-and-push-trigger-binding-resolver
       template:
-        ref: build-and-push-trigger-template
+        ref: build-and-push-trigger-template-resolver
 
