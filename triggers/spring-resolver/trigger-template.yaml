@@ -1,7 +1,7 @@
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: build-and-push-trigger-template
+  name: build-and-push-trigger-template-resolver
 spec:
   params:
     - name: git-url
@@ -21,7 +21,7 @@ spec:
         generateName: build-and-push-run-
       spec:
         pipelineRef:
-          name: build-and-push-pipeline
+          name: build-and-push-pipeline-resolver
         params:
           - name: git-url
             value: "$(tt.params.git-url)"
