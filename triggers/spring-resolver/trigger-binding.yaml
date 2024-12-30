@@ -1,7 +1,7 @@
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: build-and-push-trigger-binding
+  name: build-and-push-trigger-binding-resolver
 spec:
   params:
     - name: git-url
