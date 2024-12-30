@@ -184,11 +184,15 @@ spec:
               git config user.name "mramadan83"
               git config user.email "mramadan83@gmail.com"
               git add $(params.repo-name)/deployment.yaml
-              git commit -m "Update deployment image to $IMAGE"
-              git status
-              git branch -a
-              git checkout -b main
-              git push -u origin main
+              if git diff-index --quiet HEAD --; then
+                echo "No changes to commit."
+              else                
+                git commit -m "Update deployment image to $IMAGE"
+                git status
+                git branch -a
+                git checkout -b main
+                git push -u origin main
+              fi
     
           # Step 3: Push changes
           # Ensure the secret with credentials is mounted and git remote is authenticated
