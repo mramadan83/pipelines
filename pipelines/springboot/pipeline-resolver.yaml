@@ -30,8 +30,14 @@ spec:
     # 1. Clone the source code repository
     - name: clone-repo
       taskRef:
-        kind: ClusterTask
-        name: git-clone
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: git-clone
+          - name: namespace
+            value: openshift-pipelines 
       params:
         - name: url
           value: "$(params.git-url)"
@@ -46,8 +52,14 @@ spec:
       runAfter:
         - clone-repo
       taskRef:
-        kind: ClusterTask
-        name: maven
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: maven
+          - name: namespace
+            value: openshift-pipelines
       params:
         - name: GOALS
           value:
@@ -64,8 +76,14 @@ spec:
       runAfter:
         - build-app
       taskRef:
-        kind: ClusterTask
-        name: buildah
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: buildah
+          - name: namespace
+            value: openshift-pipelines
       params:
         - name: IMAGE
           value: "quay.io/mramadan83/$(params.repo-name):$(tasks.clone-repo.results.commit)"
@@ -86,8 +104,14 @@ spec:
       runAfter:
         - build-image
       taskRef:
-        kind: ClusterTask
-        name: buildah
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: buildah
+          - name: namespace
+            value: openshift-pipelines
       params:
         - name: IMAGE
           value: "quay.io/mramadan83/$(params.repo-name):$(tasks.clone-repo.results.commit)"
@@ -110,8 +134,14 @@ spec:
       runAfter:
         - push-image
       taskRef:
-        kind: ClusterTask
-        name: git-clone
+        resolver: cluster
+        params:
+          - name: kind
+            value: task
+          - name: name
+            value: git-clone
+          - name: namespace
+            value: openshift-pipelines
       params:
         - name: url
           value: "$(params.infra-git-url)"
