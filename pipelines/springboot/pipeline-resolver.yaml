@@ -187,6 +187,7 @@ spec:
               if git diff-index --quiet HEAD --; then
                 echo "No changes to commit."
               else                
+                echo "Commit changes."
                 git commit -m "Update deployment image to $IMAGE"
                 git status
                 git branch -a
