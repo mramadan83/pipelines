@@ -1,0 +1,239 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-and-push-pipeline-git-auth
+  # Adjust the namespace as needed
+spec:
+  params:
+    - name: git-url
+      description: The Git repository URL to clone
+    - name: git-revision
+      description: The branch or commit to check out 
+      default: "main"
+    - name: repo-name
+      description: The Quay.io repository name
+    - name: target-namespace
+      description: The namespace where the application is deployed
+    - name: infra-git-url
+      type: string
+      description: Git repository URL for the infra repo containing deployment.yaml
+      default: "https://github.com/mramadan83/infra.git"
+
+  workspaces:
+    - name: shared-workspace
+      description: Workspace for sharing source code and build artifacts between tasks.
+    - name: maven-settings
+      description: Maven settings configuration.
+    - name: infra-workspace
+      description: Workspace for sharing infra source code and build artifacts between tasks.
+    - name: git-auth-workspace
+      description: mount github credentials
+  tasks:
+    # 1. Clone the source code repository
+    - name: clone-repo
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      params:
+        - name: url
+          value: "$(params.git-url)"
+        - name: revision
+          value: "$(params.git-revision)"
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+        - name: auth
+          workspace: git-auth-workspace
+
+    # 2. Build the application using Maven after the repo is cloned
+    - name: build-app
+      runAfter:
+        - clone-repo
+      taskRef:
+        kind: ClusterTask
+        name: maven
+      params:
+        - name: GOALS
+          value:
+            - clean
+            - package
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: maven-settings
+          workspace: maven-settings
+
+    # 3. Build the container image once the app is successfully built
+    - name: build-image
+      runAfter:
+        - build-app
+      taskRef:
+        kind: ClusterTask
+        name: buildah
+      params:
+        - name: IMAGE
+          value: "quay.io/mramadan83/$(params.repo-name):$(tasks.clone-repo.results.commit)"
+        - name: STORAGE
+          value: "overlay"
+        - name: TLSVERIFY
+          value: "true"
+        - name: FORMAT
+          value: "oci"
+        - name: DOCKERFILE
+          value: "/workspace/source/Dockerfile"
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+
+    # 4. Push the built image to Quay.io after the image is created
+    - name: push-image
+      runAfter:
+        - build-image
+      taskRef:
+        kind: ClusterTask
+        name: buildah
+      params:
+        - name: IMAGE
+          value: "quay.io/mramadan83/$(params.repo-name):$(tasks.clone-repo.results.commit)"
+        - name: STORAGE
+          value: "overlay"
+        - name: TLSVERIFY
+          value: "true"
+        - name: FORMAT
+          value: "oci"
+        - name: DESTINATION
+          value: "docker://quay.io/mramadan83/$(params.repo-name):$(tasks.clone-repo.results.commit)"
+        - name: AUTHFILE
+          value: "/tekton/credentials/.dockerconfigjson"
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+
+    # Clone the infra repository that has deployment.yaml
+    - name: clone-infra
+      runAfter:
+        - push-image
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      params:
+        - name: url
+          value: "$(params.infra-git-url)"
+        - name: revision
+          value: "main"
+      workspaces:
+        - name: output
+          workspace: infra-workspace
+
+    - name: update-and-push-deployment
+      runAfter:
+        - clone-infra
+      taskSpec:
+        params:
+          - name: repo-name
+            type: string
+        steps:
+          # Step 1: Update the image tag
+          - name: update-image
+            image: registry.access.redhat.com/ubi8/ubi:latest
+            script: |
+              #!/usr/bin/env sh
+              set -e
+              IMAGE="quay.io/mramadan83/$(params.repo-name):$(tasks.clone-repo.results.commit)"
+              echo "Updating deployment.yaml with image: $IMAGE"
+              # Assuming there's a line in deployment.yaml like:
+              # image: quay.io/mramadan83/spring-boot-hello-world:latest
+              sed -i "s|image: quay.io/mramadan83/.*|image: $IMAGE|" /workspace/infra-workspace/$(params.repo-name)/deployment.yaml
+    
+          # Step 2: Commit changes
+          # You need git installed in the image. Use an image with git and sh:
+          - name: git-commit
+            image: alpine/git:latest
+            workingDir: /workspace/infra-workspace
+            script: |
+              #!/usr/bin/env sh
+              set -e
+              git config --global --add safe.directory /workspace/infra-workspace
+              git config user.name "mramadan83"
+              git config user.email "mramadan83@gmail.com"
+              git add $(params.repo-name)/deployment.yaml
+              git commit -m "Update deployment image to $IMAGE"
+              # git push origin main
+    
+          # Step 3: Push changes
+          # Ensure the secret with credentials is mounted and git remote is authenticated
+          #- name: git-push
+          #  image: alpine/git:latest
+          #  workingDir: /workspace/infra-workspace
+          #  script: |
+          #    #!/usr/bin/env sh
+          #    set -e
+          #    git config --global --add safe.directory /workspace/infra-workspace
+          #    git config user.name "mramadan83"
+          #    git config user.email "mramadan83@gmail.com"
+          #    git remote set-url origin https://mramadan83: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@github.com/mramadan83/infra.git
+          #    git checkout main || git checkout -b main
+          #    git push origin main
+      params:
+        - name: repo-name
+          value: "$(params.repo-name)"
+      workspaces:
+        - name: infra-workspace
+          workspace: infra-workspace
+    
+
+    # Apply the deployment from the infra repo
+    - name: create-deployment
+      runAfter:
+        - update-and-push-deployment
+      taskSpec:
+        params:
+          - name: target-namespace
+            type: string
+          - name: repo-name
+            type: string
+        steps:
+          - name: apply-deployment
+            image: quay.io/openshift/origin-cli:4.7
+            script: |
+              #!/usr/bin/env sh
+              set -e
+              DEPLOYMENT_NAME="$(params.repo-name)"
+              NAMESPACE="$(params.target-namespace)"
+              # Assuming deployment.yaml is in the root of the infra repo
+              oc apply -f /workspace/infra-workspace/$(params.repo-name)/deployment.yaml -n $NAMESPACE
+      params:
+        - name: target-namespace
+          value: "$(params.target-namespace)"
+        - name: repo-name
+          value: "$(params.repo-name)"
+      workspaces:
+        - name: infra-workspace
+          workspace: infra-workspace
+          
+    - name: deploy-to-openshift
+      runAfter:
+        - create-deployment
+      params:
+        - name: repo-name
+          value: "$(params.repo-name)"
+        - name: target-namespace
+          value: "$(params.target-namespace)"
+          
+      taskSpec:
+        params:
+          - name: repo-name
+            type: string
+          - name: target-namespace
+            type: string
+
+        steps:
+          - name: update-deployment
+            image: quay.io/openshift/origin-cli:4.7
+            script: |
+              #!/usr/bin/env sh
+              set -e
+              IMAGE="quay.io/mramadan83/$(params.repo-name):$(tasks.clone-repo.results.commit)"
+              DEPLOYMENT="$(params.repo-name)"
+              NAMESPACE="$(params.target-namespace)"
+              oc set image deployment/$DEPLOYMENT *=${IMAGE} -n $NAMESPACE
