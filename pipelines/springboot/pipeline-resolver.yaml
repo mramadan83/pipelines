@@ -143,9 +143,9 @@ spec:
           - name: namespace
             value: openshift-pipelines
       params:
-        - name: url
+        - name: URL
           value: "$(params.infra-git-url)"
-        - name: revision
+        - name: REVISION
           value: "main"
       workspaces:
         - name: output
