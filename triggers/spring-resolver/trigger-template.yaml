@@ -22,6 +22,9 @@ spec:
       spec:
         pipelineRef:
           name: build-and-push-pipeline-resolver
+        podTemplate:
+          securityContext:
+            fsGroup: 65532
         params:
           - name: git-url
             value: "$(tt.params.git-url)"
