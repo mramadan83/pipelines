@@ -1,7 +1,7 @@
 apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: github-webhook-listener
+  name: github-webhook-listener-resolver
 spec:
   serviceAccountName: pipeline
   triggers:
