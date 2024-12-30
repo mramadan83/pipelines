@@ -95,7 +95,7 @@ spec:
         - name: FORMAT
           value: "oci"
         - name: DOCKERFILE
-          value: "/workspace/source/Dockerfile"
+          value: "/Dockerfile"
       workspaces:
         - name: source
           workspace: shared-workspace
