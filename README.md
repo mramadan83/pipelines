@@ -13,6 +13,7 @@
   -n your-namespace
 - link the secret to  the pipeline service account and default service account (used by deployments)
 - oc secrets link pipeline quay-credentials --for=pull,mount
+- link the secret to the default service account at all namespaces that you will deploy to.
 - oc secrets link default quay-credentials --for=pull,mount
 - create the pipeline
 - oc apply -f https://raw.githubusercontent.com/mramadan83/pipelines/refs/heads/main/pipelines/springboot/pipline.yaml
@@ -37,7 +38,10 @@
   - you can check results by
   - oc get sa pipeline -o yaml
 
-
+########################
+we  have pipeline using resolver instead of cluster task pipeline-resolver.yaml
+https://www.redhat.com/en/blog/migration-from-clustertasks-to-tekton-resolvers-in-openshift-pipelines
+########################
 - #################################################
 if your namespace can't use the cluster tasks
 check first
